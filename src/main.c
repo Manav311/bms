@@ -20,7 +20,9 @@
 #include <zephyr/bluetooth/uuid.h>
 #include <zephyr/bluetooth/gatt.h>
 
+#include <bluetooth/services/bms.h>
 
+#include <zephyr/settings/settings.h>
 
 #include <dk_buttons_and_leds.h>
 
@@ -107,7 +109,7 @@ static void recycled_cb(void)
 BT_CONN_CB_DEFINE(conn_callbacks) = {
 	.connected        = connected,
 	.disconnected     = disconnected,
-	
+	.security_changed = security_changed,
 	.recycled         = recycled_cb,
 };
 
@@ -159,6 +161,43 @@ static struct bt_conn_auth_info_cb conn_auth_info_callbacks = {
 	.pairing_failed = pairing_failed
 };
 
+static bool bms_authorize(struct bt_conn *conn,
+			  struct bt_bms_authorize_params *params)
+{
+	if ((params->code_len == sizeof(bms_auth_code)) &&
+	    (memcmp(bms_auth_code, params->code, sizeof(bms_auth_code)) == 0)) {
+		printk("Authorization of BMS operation is successful\n");
+		return true;
+	}
+
+	printk("Authorization of BMS operation has failed\n");
+	return false;
+}
+
+static struct bt_bms_cb bms_callbacks = {
+	.authorize = bms_authorize,
+};
+
+static int bms_init(void)
+{
+	struct bt_bms_init_params init_params = {0};
+
+	/* Enable all possible operation codes */
+	init_params.features.delete_requesting.supported = true;
+	init_params.features.delete_rest.supported = true;
+	init_params.features.delete_all.supported = true;
+
+	/* Require authorization code for operations that
+	 * also delete bonding information for other devices
+	 * than the requesting client.
+	 */
+	init_params.features.delete_rest.authorize = true;
+	init_params.features.delete_all.authorize = true;
+
+	init_params.cbs = &bms_callbacks;
+
+	return bt_bms_init(&init_params);
+}
 
 int main(void)
 {
@@ -173,8 +212,17 @@ int main(void)
 		return 0;
 	}
 
+	err = bt_conn_auth_cb_register(&conn_auth_callbacks);
+	if (err) {
+		printk("Failed to register authorization callbacks.\n");
+		return 0;
+	}
 
-	
+	err = bt_conn_auth_info_cb_register(&conn_auth_info_callbacks);
+	if (err) {
+		printk("Failed to register authorization info callbacks.\n");
+		return 0;
+	}
 
 	err = bt_enable(NULL);
 	if (err) {
@@ -188,7 +236,11 @@ int main(void)
 		settings_load();
 	}
 
-
+	err = bms_init();
+	if (err) {
+		printk("Failed to init BMS (err:%d)\n", err);
+		return 0;
+	}
 
 	k_work_init(&adv_work, adv_work_handler);
 	advertising_start();
