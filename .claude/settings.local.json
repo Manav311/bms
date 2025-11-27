@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(west build:*)",
+      "Bash(\"C:\\ncs\\toolchains\\cf2149caf2\\bin\\west.exe\" build -p auto -b nrf52dk_nrf52832)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -19,6 +19,7 @@
 #include <zephyr/bluetooth/conn.h>
 #include <zephyr/bluetooth/uuid.h>
 #include <zephyr/bluetooth/gatt.h>
+#include <zephyr/bluetooth/audio/csip.h>
 
 #include <bluetooth/services/bms.h>
 
@@ -40,13 +41,31 @@
 static const uint8_t bms_auth_code[] = {'A', 'B', 'C', 'D'};
 static struct k_work adv_work;
 
+/* CSIP Set Member - SIRK (Set Identity Resolving Key)
+ * This is a unique 128-bit key that identifies this coordinated set.
+ * All members of the same set share the same SIRK.
+ * NOTE: In production, this should be randomly generated and stored securely.
+ */
+static uint8_t sirk_value[BT_CSIP_SIRK_SIZE] = {
+	0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0,
+	0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88
+};
+
+/* CSIP Set Member instance */
+static struct bt_csip_set_member_svc_inst *csip_instance;
+
+/* CSIP lock state */
+static bool csip_locked;
+
 static const struct bt_data ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
 	BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
 };
 
 static const struct bt_data sd[] = {
-	BT_DATA_BYTES(BT_DATA_UUID16_ALL, BT_UUID_16_ENCODE(BT_UUID_BMS_VAL)),
+	BT_DATA_BYTES(BT_DATA_UUID16_ALL,
+		      BT_UUID_16_ENCODE(BT_UUID_BMS_VAL),
+		      BT_UUID_16_ENCODE(BT_UUID_CSIS_VAL)),
 };
 
 static void adv_work_handler(struct k_work *work)
@@ -178,6 +197,67 @@ static struct bt_bms_cb bms_callbacks = {
 	.authorize = bms_authorize,
 };
 
+/* CSIP Set Member callbacks */
+static void csip_lock_changed_cb(struct bt_conn *conn,
+				  struct bt_csip_set_member_svc_inst *inst,
+				  bool locked)
+{
+	char addr[BT_ADDR_LE_STR_LEN];
+
+	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
+	csip_locked = locked;
+
+	printk("CSIP lock %s by %s\n", locked ? "acquired" : "released", addr);
+}
+
+static uint8_t csip_sirk_read_cb(struct bt_conn *conn,
+				  struct bt_csip_set_member_svc_inst *inst)
+{
+	char addr[BT_ADDR_LE_STR_LEN];
+
+	bt_addr_le_to_str(bt_conn_get_dst(conn), addr, sizeof(addr));
+	printk("SIRK read request from %s\n", addr);
+
+	/* Return BT_CSIP_READ_SIRK_REQ_RSP_ACCEPT to allow SIRK sharing
+	 * Return BT_CSIP_READ_SIRK_REQ_RSP_REJECT to deny
+	 * Return BT_CSIP_READ_SIRK_REQ_RSP_OOB_ONLY to require out-of-band sharing
+	 */
+	return BT_CSIP_READ_SIRK_REQ_RSP_ACCEPT;
+}
+
+static struct bt_csip_set_member_cb csip_callbacks = {
+	.lock_changed = csip_lock_changed_cb,
+	.sirk_read_req = csip_sirk_read_cb,
+};
+
+static int csip_init(void)
+{
+	struct bt_csip_set_member_register_param csip_param = {
+		.set_size = 2,  /* Size of coordinated set (2 = stereo pair) */
+		.rank = 1,      /* Rank within the set (1 = left, 2 = right) */
+		.lockable = true,
+		.cb = &csip_callbacks,
+	};
+	int err;
+
+	/* Copy SIRK value into parameter structure
+	 * The SIRK is automatically encrypted when shared over BLE if
+	 * CONFIG_BT_CSIP_SET_MEMBER_ENC_SIRK_SUPPORT is enabled
+	 */
+	memcpy(csip_param.sirk, sirk_value, sizeof(sirk_value));
+
+	err = bt_csip_set_member_register(&csip_param, &csip_instance);
+	if (err) {
+		printk("Failed to register CSIP Set Member (err %d)\n", err);
+		return err;
+	}
+
+	printk("CSIP Set Member registered successfully\n");
+	printk("Set size: %d, Rank: %d\n", csip_param.set_size, csip_param.rank);
+
+	return 0;
+}
+
 static int bms_init(void)
 {
 	struct bt_bms_init_params init_params = {0};
@@ -234,6 +314,12 @@ int main(void)
 
 	if (IS_ENABLED(CONFIG_SETTINGS)) {
 		settings_load();
+	}
+
+	err = csip_init();
+	if (err) {
+		printk("Failed to init CSIP (err:%d)\n", err);
+		return 0;
 	}
 
 	err = bms_init();
