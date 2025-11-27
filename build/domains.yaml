@@ -1,7 +1,0 @@
-default: peripheral_bms
-build_dir: C:/Users/manav/OneDrive/Desktop/peripheral_bms/build
-domains:
-  - name: peripheral_bms
-    build_dir: C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/peripheral_bms
-flash_order:
-  - peripheral_bms
