@@ -1,0 +1,11 @@
+# ninja log v5
+2	220	7858532627893786	_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-mkdir	17faf0c2aa52e414
+2	220	7858532627893786	C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-mkdir	17faf0c2aa52e414
+220	282	7858532628516742	_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-download	9fd676e10e2c9498
+220	282	7858532628516742	C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-download	9fd676e10e2c9498
+334	495	7858532629708194	_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-update	238e4a290b382dc5
+334	495	7858532629708194	C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-update	238e4a290b382dc5
+496	559	7858532631269629	_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-patch	6ce69191b2473c19
+496	559	7858532631269629	C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-patch	6ce69191b2473c19
+559	618	7858532631879495	_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-configure	70b7a52e6a58382e
+559	618	7858532631879495	C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-configure	70b7a52e6a58382e

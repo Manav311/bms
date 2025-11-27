@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/CMakeFiles/peripheral_bms"
+		},
+		{
+			"file" : "C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/CMakeFiles/peripheral_bms.rule"
+		},
+		{
+			"file" : "C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/CMakeFiles/peripheral_bms-complete.rule"
+		},
+		{
+			"file" : "C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-build.rule"
+		},
+		{
+			"file" : "C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-configure.rule"
+		},
+		{
+			"file" : "C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-download.rule"
+		},
+		{
+			"file" : "C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-install.rule"
+		},
+		{
+			"file" : "C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-patch.rule"
+		},
+		{
+			"file" : "C:/Users/manav/OneDrive/Desktop/peripheral_bms/build/_sysbuild/sysbuild/images/peripheral_bms-prefix/src/peripheral_bms-stamp/peripheral_bms-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"peripheral_bms"
+		],
+		"name" : "peripheral_bms"
+	}
+}

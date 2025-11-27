@@ -1,0 +1,20 @@
+app:
+  address: 0x0
+  end_address: 0x2e000
+  region: flash_primary
+  size: 0x2e000
+settings_storage:
+  address: 0x2e000
+  end_address: 0x30000
+  placement:
+    align:
+      start: 0x1000
+    before:
+    - end
+  region: flash_primary
+  size: 0x2000
+sram_primary:
+  address: 0x20000000
+  end_address: 0x20006000
+  region: sram_primary
+  size: 0x6000
